@@ -281,7 +281,7 @@ class AIORedisClient(object):
                 raise RedisClientError("invalid session_id, session_id={}".format(session_id))
             return session
 
-    async def save_update_hash_data(self, name, hash_data: dict, field_name=None, ex=EXPIRED, dump_responses=False):
+    async def save_update_hash_data(self, name, hash_data: dict, field_name=None, ex=None, dump_responses=False):
         """
         获取hash对象field_name对应的值
         Args:
@@ -313,13 +313,21 @@ class AIORedisClient(object):
             else:
                 hash_data = hash_data if isinstance(hash_data, str) else ujson.dumps(hash_data)
                 await self.redis_db.hset(name, field_name, hash_data)
-
-            if not await self.redis_db.expire(name, ex):
-                raise RedisClientError("set hash data expire failed, session_id={}".format(name))
+            if ex:
+                if not await self.redis_db.expire(name, ex):
+                    raise RedisClientError("set hash data expire failed, session_id={}".format(name))
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
             return name
+
+    async def set_expire_data(self, name, ex=EXPIRED):
+        try:
+            await self.redis_db.expire(name, ex)
+            return True
+        except RedisError as e:
+            aelog.info(RedisClientError(str(e)))
+            return False
 
     async def get_hash_data(self, name, field_name=None, ex=EXPIRED, load_responses=False):
         """
@@ -350,10 +358,8 @@ class AIORedisClient(object):
                         rs_data[hash_key] = hash_val
                     hash_data = rs_data
             if not hash_data:
-                raise RedisClientError("not found hash data, name={}, field_name={}".format(name, field_name))
-
-            if not await self.redis_db.expire(name, ex):
-                raise RedisClientError("set expire failed, name={}".format(name))
+                # raise RedisClientError("not found hash data, name={}, field_name={}".format(name, field_name))
+                hash_data = {}
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
@@ -374,14 +380,12 @@ class AIORedisClient(object):
             if not data:
                 raise RedisClientError("not found list data, name={}, start={}, end={}".format(name, start, end))
 
-            if not await self.redis_db.expire(name, ex):
-                raise RedisClientError("set expire failed, name={}".format(name))
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
             return data
 
-    async def save_list_data(self, name, list_data: list or str, save_to_left=True, ex=EXPIRED):
+    async def save_list_data(self, name, list_data: list or str, save_to_left=True, ex=None):
         """
         保存数据到redis的列表中
         Args:
@@ -399,14 +403,15 @@ class AIORedisClient(object):
             else:
                 if not await self.redis_db.rpush(name, *list_data):
                     raise RedisClientError("lpush value to tail failed.")
-            if not await self.redis_db.expire(name, ex):
-                raise RedisClientError("set expire failed, name={}".format(name))
+            if ex:
+                if not await self.redis_db.expire(name, ex):
+                    raise RedisClientError("set list data expire failed, session_id={}".format(name))
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
             return name
 
-    async def save_update_usual_data(self, name, value, ex=EXPIRED):
+    async def save_update_usual_data(self, name, value, ex=None):
         """
         保存列表、映射对象为普通的字符串
         Args:
@@ -438,9 +443,6 @@ class AIORedisClient(object):
             if not data:
                 raise RedisClientError("not found usual data, name={}".format(name))
 
-            if not await self.redis_db.expire(name, ex):
-                raise RedisClientError("set expire failed, name={}".format(name))
-
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
@@ -456,7 +458,7 @@ class AIORedisClient(object):
         Returns:
         """
         try:
-            data = await self.redis_db.srem(name)
+            data = await self.redis_db.exists(name)
         except RedisError as e:
             raise RedisClientError(str(e))
         else:
