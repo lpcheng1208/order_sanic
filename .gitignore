@@ -59,10 +59,10 @@ db.sqlite3
 # Flask stuff:
 instance/
 .webassets-cache
-
+.DS_Store
 # Scrapy stuff:
 .scrapy
-
+.idea
 # Sphinx documentation
 docs/_build/
 
