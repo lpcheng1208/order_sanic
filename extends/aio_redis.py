@@ -493,5 +493,5 @@ class AIORedisClient(object):
             return data
 
 
-rds = AIORedisClient()
-rds_1 = AIORedisClient(dbname=1)
+redis_conn_0 = AIORedisClient()
+redis_conn_1 = AIORedisClient(dbname=1)

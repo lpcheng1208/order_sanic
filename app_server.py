@@ -6,7 +6,7 @@ from sanic_motor import BaseModel
 
 from apis import api
 from config.settings import logging_config
-from extends.aio_redis import rds, rds_1
+from extends.aio_redis import redis_conn_0, redis_conn_1
 from extends.aio_mysql import db_sql
 
 from sanic_cors import CORS, cross_origin
@@ -43,13 +43,13 @@ app.config.update(
 )
 mon_db = BaseModel()
 mon_db.init_app(app)
-rds.init_app(app)
-rds_1.init_app(app)
+redis_conn_0.init_app(app)
+redis_conn_1.init_app(app)
 db_sql.init_app(app)
 app.db = db_sql
 app.mon_db = mon_db
-app.rds = rds
-app.rds_1 = rds_1
+app.redis_conn_0 = redis_conn_0
+app.redis_conn_1 = redis_conn_1
 
 # cors = CORS(app, resources={r"/apis/*": {"origins": "*"}})
 

@@ -10,7 +10,7 @@ from sanic import Blueprint
 from sanic.response import json as json_response
 
 from apis.order.filter import *
-from extends.aio_redis import rds
+from extends.aio_redis import redis_conn_0
 from models.User import User
 from models.model_mongo import UserMon, Gift_list
 from bson import ObjectId
@@ -76,8 +76,8 @@ async def handler(request: request.Request):
 
     rows = await m.query_user_money(userid='5c36a7a8ddf27b0043d62f90')
     # logger.info("aaaaa  %s" % rows)
-    rds_db = request.app.rds
-    rds_db_1 = request.app.rds_1
+    rds_db = request.app.redis_conn_0
+    rds_db_1 = request.app.redis_conn_1
     b = await rds_db.get_hash_data("aaaa")
     await rds_db_1.save_update_usual_data("abbb", 1, 600)
     c = await rds_db.redis_db.ttl("bbb")
