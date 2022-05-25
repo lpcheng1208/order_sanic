@@ -27,7 +27,7 @@ idna-ssl==1.1.0
 motor==2.0.0
 multidict==4.5.2
 pycparser==2.19
-PyJWT==1.7.1
+PyJWT==2.4.0
 pymongo==3.9.0
 PyMySQL==0.9.2
 python-dateutil==2.8.0
