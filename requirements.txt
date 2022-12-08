@@ -9,7 +9,7 @@ async-timeout==3.0.1
 attrs==19.1.0
 bcrypt==3.1.7
 bson==0.5.8
-certifi==2019.6.16
+certifi==2022.12.7
 cffi==1.12.3
 chardet==3.0.4
 colorlog==4.0.2
